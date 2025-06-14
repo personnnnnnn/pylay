@@ -1,5 +1,5 @@
 import os
-from typing import TypedDict, Literal, Any
+from typing import TypedDict, Literal, Any, Callable
 
 from .lua_deps import load_deps, lua
 
@@ -21,7 +21,23 @@ class DrawClipped(TypedDict):
     height: float
     sub_commands: list['DrawCommand']
 
+class DrawText(TypedDict):
+    type: Literal["text"]
+    x: float
+    y: float
+    text: str
+    fontSize: float
+    color: 'Color'
+
 type DrawCommand = DrawRectangle | DrawClipped
+
+def text_measure_line_height(f: Callable[[float], float]) -> Callable[[], float]:
+    lua.globals().TextMeasurer.lineHeight = f
+    return f
+
+def text_measure_text_width(f: Callable[[str, float], float]) -> Callable[[str, float], float]:
+    lua.globals().TextMeasurer.textWidth = f
+    return f
 
 class Color:
     def __init__(self, r: int, g: int, b: int) -> None:
@@ -146,6 +162,8 @@ class UI:
     def sizing_grow(self) -> 'UI':
         return self.width_grow().height_grow()
 
+
+
 def transform_command(x: dict[str, Any]) -> DrawCommand:
     x = dict(x)
     if 'color' in x.keys():
@@ -154,3 +172,26 @@ def transform_command(x: dict[str, Any]) -> DrawCommand:
         x['sub_commands'] = map(transform_command, list(x['subCommands']))
         del x['subCommands']
     return x
+
+class Text:
+    def __init__(self, text: str):
+        self.lua_obj = lua.globals().Text.New(text)
+
+    def font_size(self, size: float) -> 'Text':
+        self.lua_obj.ui.fontSize = size
+        return self
+
+    def color(self, color: Color) -> 'Text':
+        self.lua_obj.ui.color = color.lua_obj
+        return self
+
+    def show(self) -> 'Text':
+        with self: ...
+        return self
+
+    def __enter__(self) -> 'Text':
+        self.lua_obj.enter(self.lua_obj)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.lua_obj.exit(self.lua_obj)
