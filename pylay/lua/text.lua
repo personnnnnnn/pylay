@@ -51,6 +51,7 @@ function wrapText(text, fontSize, maxWidth)
         newString = newString .. '\n' .. currentLine
     end
 
+    local _
     _, newString = consume(newString)
 
     return newString, lineCount * TextMeasurer.lineHeight(fontSize)
@@ -61,6 +62,13 @@ function Text:wrapText()
     local height
     self.text, height = wrapText(self.text, self.ui.fontSize, self.dim.width)
     self.dim.height = height
+    self.min.height = height
+    self.max.height = height
+
+    if self.parent ~= nil and self.parent.ui.sizing.height ~= 'fixed' then
+        self.parent.dim.height = self.parent.dim.height + self.dim.height
+        self.parent.min.height = self.parent.min.height + self.dim.height
+    end
 end
 
 function Text:used()

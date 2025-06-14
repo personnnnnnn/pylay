@@ -24,13 +24,7 @@ function Node:handleGrowingAndShrinking(xAxis)
 
     for _, child in ipairs(self.children) do
         remainingLength = remainingLength - child.dim:length(xAxis)
-        if
-            (Class.is(child, Text) and xAxis)
-            or (
-                Class.is(child, Node)
-                and child:getUILength(xAxis) == 'grow'
-            )
-        then
+        if (Class.is(child, Text) and xAxis) or (Class.is(child, Node) and child:getUILength(xAxis) == 'grow') then
             changeable[#changeable + 1] = child
         end
     end
@@ -63,7 +57,7 @@ function Node:handleGrowingAndShrinking(xAxis)
                     child.dim:length(xAxis) >= child.max:length(xAxis)
                     and child.max:length(xAxis) ~= 0
                 then
-                    child.dim:length(xAxis, child.max:length(xAxis))
+                    child.dim:setLength(xAxis, child.max:length(xAxis))
                     table.remove(changeable, i)
                 end
                 remainingLength = remainingLength - (child.dim:length(xAxis) - previousLength)
@@ -96,7 +90,7 @@ function Node:handleGrowingAndShrinking(xAxis)
                 if
                     child.dim:length(xAxis) <= child.min:length(xAxis)
                 then
-                    child.dim:length(xAxis, child.min:length(xAxis))
+                    child.dim:setLength(xAxis, child.min:length(xAxis))
                     table.remove(changeable, i)
                 end
                 remainingLength = remainingLength + (child.dim:length(xAxis) - previousLength)

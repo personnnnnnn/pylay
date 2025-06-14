@@ -15,19 +15,6 @@ function Node:xAxis()
     return self.ui.layoutDirection == 'ltr'
 end
 
-function Node:used()
-    Element.used(self)
-
-    if self.ui.sizing.width == 'fixed' then
-        self.dim.width = self.dim.width + self.ui.fixedSizing.width
-    end
-    if self.ui.sizing.height == 'fixed' then
-        self.dim.height = self.dim.height + self.ui.fixedSizing.height
-    end
-
-    self:addPaddingToDimensions()
-end
-
 function Node:paddingSum(xAxis)
     if xAxis then
         return self.ui.padding.left + self.ui.padding.right
@@ -49,4 +36,12 @@ function Node:getUILength(xAxis)
     else
         return self.ui.sizing.height
     end
+end
+
+function Node:isDynamic(xAxis)
+    return self:getUILength(xAxis) ~= 'fixed'
+end
+
+function Node:isGrowable(xAxis)
+    return self:getUILength(xAxis) == 'grow'
 end

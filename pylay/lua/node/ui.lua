@@ -29,6 +29,10 @@ function Node:addDimensionsToParent(xAxis)
     if self.parent == nil then
         return
     end
+    --
+    --if self:getUILength(xAxis) ~= 'fixed' then
+    --    self.dim.max:setLength(math.max(self.parent.dim:length(xAxis)))
+    --end
 
     if xAxis == self.parent:xAxis() and self.parent:getUILength(xAxis) ~= 'fixed' then
         self.parent.dim:setLength(
@@ -51,4 +55,18 @@ function Node:addDimensionsToParent(xAxis)
             math.max(self.parent.min:length(xAxis) + self.parent:paddingSum(xAxis), self.dim:length(xAxis))
         )
     end
+end
+
+function Node:used()
+    Element.used(self)
+
+    if self.ui.sizing.width == 'fixed' then
+        self.dim.width = self.dim.width + self.ui.fixedSizing.width
+    end
+
+    if self.ui.sizing.height == 'fixed' then
+        self.dim.height = self.dim.height + self.ui.fixedSizing.height
+    end
+
+    self:addPaddingToDimensions()
 end
