@@ -74,9 +74,10 @@ def render_draw_command(command: DrawCommand) -> None:
         #         command['width'], command['height']
         #     )
         # )
+        line_height = font(command['fontSize']).get_height()
         for i, line in enumerate(command['text'].split('\n')):
             text = font(command['fontSize']).render(line, True, pylay_color_to_pg(command['color']))
-            pg.display.get_surface().blit(text, (command['x'], command['y'] + font(command['fontSize']).get_height() * i))
+            pg.display.get_surface().blit(text, (command['x'], command['y'] + line_height * i))
 
 @lru_cache()
 def font(font_size: float) -> pg.font.Font:
