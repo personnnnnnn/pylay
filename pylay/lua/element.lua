@@ -15,13 +15,6 @@ end
 
 function Element:used() end
 
---function Element:handleFitSizing(xAxis)
---    if self.parent ~= nil and self.parent:isDynamic() then
---        self.parent.dim.height = self.parent.dim.height + self.min.height
---        self.parent.min.height = self.parent.min.height + self.min.height
---    end
---end
-
 function Element:enter()
     UIStack[#UIStack + 1] = self
 end

@@ -18,11 +18,13 @@ function Text:create(text)
     self.ui = Text.MakeUIData()
 end
 
-function wrapText(text, fontSize, maxWidth)
+function wrapText(text, fontSize, maxWidth, marginOfError)
     local toConsume = text
     local newString = ''
     local currentLine = ''
     local lineCount = 0
+
+    marginOfError = marginOfError or 0
 
     toConsume = string.gsub(toConsume, '\r\n?', '\n')
 
@@ -36,7 +38,7 @@ function wrapText(text, fontSize, maxWidth)
             currentLine = ''
         else
             local width = TextMeasurer.textWidth(currentLine .. char, fontSize)
-            if width > maxWidth then
+            if width > maxWidth + marginOfError then
                 lineCount = lineCount + 1
                 newString = newString .. '\n' .. currentLine
                 currentLine = char
@@ -60,14 +62,37 @@ end
 function Text:wrapText()
     Element.wrapText(self)
     local height
-    self.text, height = wrapText(self.text, self.ui.fontSize, self.dim.width)
+    self.text, height = wrapText(self.text, self.ui.fontSize, self.dim.width, 0.1)
     self.dim.height = height
     self.min.height = height
     self.max.height = height
 
-    if self.parent ~= nil and self.parent.ui.sizing.height ~= 'fixed' then
-        self.parent.dim.height = self.parent.dim.height + self.dim.height
-        self.parent.min.height = self.parent.min.height + self.dim.height
+    if self.parent == nil then return end
+
+    if self.parent:getUILength(xAxis) == 'fixed' then
+        return
+    end
+
+    if xAxis == self.parent:xAxis() then
+        self.parent.dim:setLength(
+            xAxis,
+            self.parent.dim:length(xAxis) + self.dim:length(xAxis)
+        )
+        self.parent.min:setLength(
+            xAxis,
+            self.parent.dim:length(xAxis) + self.dim:length(xAxis)
+        )
+    end
+
+    if xAxis ~= self.parent:xAxis() then
+        self.parent.dim:setLength(
+            xAxis,
+            math.max(self.parent.dim:length(xAxis), self.dim:length(xAxis) + self.parent:paddingSum(xAxis))
+        )
+        self.parent.min:setLength(
+            xAxis,
+            math.max(self.parent.min:length(xAxis), self.dim:length(xAxis) + self.parent:paddingSum(xAxis))
+        )
     end
 end
 
@@ -90,15 +115,6 @@ function Text:used()
         end
 
         self.min.width = minWordLength
-    end
-
-    if self.parent ~= nil and self.parent.ui.sizing.width == 'fit' then
-        if self.parent:xAxis() then
-            self.parent.dim.width = self.parent.dim.width + self.dim.width
-        else
-            local innerWidth = self.parent.dim.width - self.parent:paddingSum(true)
-            self.parent.dim.width = math.max(innerWidth, self.dim.width)
-        end
     end
 end
 

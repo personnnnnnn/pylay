@@ -20,21 +20,24 @@ function Node:handleFitSizing(xAxis)
     for _, child in ipairs(self.children) do
         if Class.is(child, Node) then
             child:handleFitSizing(xAxis)
+        elseif Class.is(child, Text) and xAxis then
+            addDimensionsToParent(child, xAxis)
         end
     end
-    self:addDimensionsToParent(xAxis)
+    addDimensionsToParent(self, xAxis)
 end
 
-function Node:addDimensionsToParent(xAxis)
+-- self : Element
+function addDimensionsToParent(self, xAxis)
     if self.parent == nil then
         return
     end
-    --
-    --if self:getUILength(xAxis) ~= 'fixed' then
-    --    self.dim.max:setLength(math.max(self.parent.dim:length(xAxis)))
-    --end
 
-    if xAxis == self.parent:xAxis() and self.parent:getUILength(xAxis) ~= 'fixed' then
+    if self.parent:getUILength(xAxis) == 'fixed' then
+        return
+    end
+
+    if xAxis == self.parent:xAxis() then
         self.parent.dim:setLength(
             xAxis,
             self.parent.dim:length(xAxis) + self.dim:length(xAxis)
@@ -45,14 +48,14 @@ function Node:addDimensionsToParent(xAxis)
         )
     end
 
-    if xAxis ~= self.parent:xAxis() and self.parent:getUILength(xAxis) ~= 'fixed' then
+    if xAxis ~= self.parent:xAxis() then
         self.parent.dim:setLength(
             xAxis,
-            math.max(self.parent.dim:length(xAxis) + self.parent:paddingSum(xAxis), self.dim:length(xAxis))
+            math.max(self.parent.dim:length(xAxis), self.dim:length(xAxis) + self.parent:paddingSum(xAxis))
         )
         self.parent.min:setLength(
             xAxis,
-            math.max(self.parent.min:length(xAxis) + self.parent:paddingSum(xAxis), self.dim:length(xAxis))
+            math.max(self.parent.min:length(xAxis), self.dim:length(xAxis) + self.parent:paddingSum(xAxis))
         )
     end
 end

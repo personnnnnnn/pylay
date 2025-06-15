@@ -31,7 +31,7 @@ function Node:handleGrowingAndShrinking(xAxis)
 
     remainingLength = remainingLength - (#self.children - 1) * self.ui.childGap
 
-    while remainingLength > 0.1 and #changeable ~= 0 do -- grow
+    while self:getUILength(xAxis) ~= 'fit' and remainingLength > 0.1 and #changeable ~= 0 do -- grow
         local smallest = changeable[1].dim:length(xAxis)
         local secondSmallest = math.huge
         local lengthToAdd = remainingLength

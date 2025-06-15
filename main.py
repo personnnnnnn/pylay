@@ -9,23 +9,37 @@ def px(n: float) -> float:
     return n * scale
 
 def rem(n: float = 1) -> float:
-    return px(n) * 40
+    return px(n) * 30
 
 
-def Grow() -> 'UI':
+def Grow() -> UI:
     return UI().sizing_grow()
 
-def VSpacing(amt: float) -> 'UI':
+def VSpacing(amt: float) -> UI:
     return UI().height_fixed(amt)
 
+def StyledText(text: str) -> Text:
+    return Text(text).color(Color(100, 100, 100)).font_size(rem(1))
+
+def Section() -> UI:
+    return UI().background(Color(200, 200, 200)).spacing(px(10))
+
 def render() -> UI:
-    with UI().padding(px(20)).child_gap(3).sizing_fixed(pg.display.get_surface().get_width(), pg.display.get_surface().get_height()).background(Color(255, 255, 255)) as root_element:
-        with UI().background(Color(255, 255, 0)).top_to_bottom().width_grow():
-            with Text('Other people\'s code:').font_size(rem(1.5)).color(Color(0, 0, 0)): ...
-            with Text('print("Hello, World!")').font_size(rem(1)).color(Color(0, 0, 0)): ...
-            with VSpacing(px(20)): ...
-            with Text('My code (constantly sleep deprived):').font_size(rem(1.5)).color(Color(0, 0, 0)): ...
-            with Text('"Hello, World!".print()').font_size(rem(1)).color(Color(0, 0, 0)): ...
+    with UI().sizing_fixed(pg.display.get_surface().get_width(), pg.display.get_surface().get_height()) as root_element:
+        with Grow().background(Color(255, 255, 255)).spacing(px(20)).top_to_bottom():
+            with Section().width_grow():
+                StyledText('Home').show()
+                StyledText(f'Zoom: {int(scale * 100)}%').show()
+                Grow().show()
+                StyledText('File').show()
+                StyledText('Exit').show()
+            with Grow().child_gap(px(20)):
+                with Section().height_grow().top_to_bottom():
+                    StyledText('Document 1').show()
+                    StyledText('Document 2').show()
+                with Section().sizing_grow():
+                    StyledText('Content').show()
+
     return root_element
 
 def pylay_color_to_pg(color: Color) -> pg.Color:

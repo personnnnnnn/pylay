@@ -37,11 +37,3 @@ function Node:getUILength(xAxis)
         return self.ui.sizing.height
     end
 end
-
-function Node:isDynamic(xAxis)
-    return self:getUILength(xAxis) ~= 'fixed'
-end
-
-function Node:isGrowable(xAxis)
-    return self:getUILength(xAxis) == 'grow'
-end
