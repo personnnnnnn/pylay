@@ -33,7 +33,7 @@ function addDimensionsToParent(self, xAxis)
         return
     end
 
-    if self.parent:getUILength(xAxis) == 'fixed' then
+    if self.parent:getUILength(xAxis) ~= 'fit' then
         return
     end
 

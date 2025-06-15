@@ -37,8 +37,8 @@ def render() -> UI:
                 with Section().height_grow().top_to_bottom():
                     StyledText('Document 1').show()
                     StyledText('Document 2').show()
-                with Section().sizing_grow():
-                    StyledText('Content').show()
+                with Section().sizing_grow().top_to_bottom():
+                    StyledText('blah ' * 100).show()
 
     return root_element
 
