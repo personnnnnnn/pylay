@@ -65,6 +65,7 @@ def render_draw_command(command: DrawCommand) -> None:
             )
         )
     elif command['type'] == 'text':
+        # for debugging (when necessary)
         # pg.draw.rect(
         #     pg.display.get_surface(),
         #     (255, 0, 0),
